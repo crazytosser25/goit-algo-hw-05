@@ -1,6 +1,10 @@
-from typing import Pattern, Match
+"""imports"""
 import re
+from typing import Pattern, Match
 from pathlib import Path
+import colorama
+from colorama import Fore
+colorama.init(autoreset=True)
 
 def parse_log_line(line: str) -> dict:
     pattern: Pattern[str] = r'(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) (\w+) (.+)'
@@ -14,29 +18,29 @@ def parse_log_line(line: str) -> dict:
         }
 
 def load_logs(file_path: str) -> list:
-    file = Path(file_path)
+    file: str = Path(file_path)
+    output = []
     with open (file, "r", encoding="utf-8") as log_file:
         lines: list = log_file.readlines()
         for line in lines:
-            parse_log_line(line)
-        return lines
+            output.append(parse_log_line(line))
+        return output
 
 def filter_logs_by_level(logs: list, level: str) -> list:
-    pass
+    return list(filter(lambda line: line['level'].lower() == level, logs))
 
-def count_logs_by_level(logs: list) -> dict:
-    pass
+def count_logs_by_level(logs: list, level: str) -> dict:
+    output: list = filter_logs_by_level(logs, level)
+    return len(output)
 
 def display_log_counts(counts: dict):
-    pass
+    print(f"{Fore.GREEN}{name.ljust(30, '.')}{Fore.CYAN}{phone}\n")
 
 def main():
     pass
 
 
 if __name__ == '__main__':
-    print(load_logs('E:/Works/GoIT/goit-algo-hw-05/task_3/log.txt'))
-
-    # file_address, *args = line.split()
-    # args = args.strip().lower()    
-    # return file_address, *args
+    log = load_logs('E:/Works/GoIT/goit-algo-hw-05/task_3/log.txt')
+    test_lvl = count_logs_by_level(log, 'debug')
+    print(test_lvl)
