@@ -2,7 +2,6 @@
 from typing import Callable, Generator, Any
 import re
 
-"""Task 2"""
 def generator_numbers(text: str) -> Generator[float, Any, Any]:
     """Generate real numbers from the given text.
 
