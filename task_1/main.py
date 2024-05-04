@@ -1,5 +1,5 @@
 """Task 1"""
-def caching_fibonacci(n: int) -> int:
+def caching_fibonacci() -> int:
     """Calculating fibonacci numbers and saving them to cache. Returning
     values from cache in case of need.
 
@@ -13,12 +13,14 @@ def caching_fibonacci(n: int) -> int:
     def fibonacci(n: int) -> int:
         if n in cache:
             return cache[n]
-        result = fibonacci(n-2) + fibonacci(n-1)
-        cache[n] = result
-        return result
-    return fibonacci(n)
+        cache[n] = fibonacci(n-2) + fibonacci(n-1)
+        return cache[n]
+    return fibonacci
 
 
 if __name__ == "__main__":
-    print(caching_fibonacci(5))
-    print(caching_fibonacci(5))
+    fib = caching_fibonacci()
+    print(fib(5))
+    print(fib(5))
+    print(fib(10))
+    print(fib(15))
