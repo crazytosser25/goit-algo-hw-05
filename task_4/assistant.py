@@ -1,4 +1,4 @@
-'''Imports'''
+"""Imports"""
 import re
 import json
 from pathlib import Path
@@ -18,7 +18,7 @@ def read_file_check(func) -> callable:
     return inner
 
 def validate_two_args(func):
-    """Decorator to validate 2 contact arguments."""
+    """Decorator to validate functions with 2 arguments."""
     def inner(contacts, args):
         if len(args) != 2:
             return mistaken_arg('invalid args')
@@ -26,10 +26,11 @@ def validate_two_args(func):
         if len(phone) not in [10, 13]:
             return mistaken_arg('invalid phone')
         return func(contacts, args)
+
     return inner
 
 def validate_one_arg(func):
-    """Decorator to validate 2 contact arguments."""
+    """Decorator to validate functions with 1 argument."""
     def inner(contacts, args):
         if len(args) != 1:
             return mistaken_arg('no name for search')
@@ -37,6 +38,7 @@ def validate_one_arg(func):
         if name not in contacts:
             return mistaken_arg('phone not in contacts')
         return func(contacts, args)
+
     return inner
 
 def check_contact_exists(func):
@@ -46,7 +48,46 @@ def check_contact_exists(func):
         if name in contacts:
             return mistaken_arg('contact exists')
         return func(contacts, args)
+
     return inner
+
+# Pool of colorized output strings
+def mistaken_arg(mistake: str) -> str:
+    """Colorized output in case of user input mistakes.
+    This function takes a single argument, `mistake` which is a string
+    representing an error message. It returns a formatted string with colorful
+    terminal output based on the given mistake.
+    
+    Args:
+        mistake (str): The error message to be displayed.
+
+    Returns:
+        str: A formatted string containing the error message in colorful terminal output.
+    """
+    match mistake:
+        case 'invalid command':
+            return f"{Fore.RED}Invalid command."
+        case 'phone not in contacts':
+            return f"{Fore.RED}Invalid Name.\n{Fore.YELLOW}This contact doesn't exist."
+        case 'contact exists':
+            return f"{Fore.RED}Invalid Name.\n{Fore.YELLOW}This contact already exists."
+        case 'no name for search':
+            return f"{Fore.RED}Invalid data.\n{Fore.YELLOW}You must give me Name."
+        case 'invalid phone':
+            return f"{Fore.RED}Invalid Phone-number.\n{Fore.YELLOW}Must be 10 numbers, " \
+                    "or 13 if in international format."
+        case 'invalid args':
+            return f"{Fore.RED}Invalid data.\n{Fore.YELLOW}You must give me Name and Phone-number."
+
+def commands_help() -> str:
+    """Returns the list of commands for bot."""
+    return "'add [name] [phone]'\tto add new contact(phone must be 10 or 13 digits).\n" \
+            "'all'\t\t\tto review all contacts.\n" \
+            "'change [name] [phone]'\tto change contact's phone number.\n" \
+            "'del [name]'\t\tto delete contact from list.\n" \
+            "'phone [name]'\t\tto review contact's phone number.\n" \
+            "'close' or 'exit'\tto exit assistant.\n"
+
 
 # Functions
 def parse_input(user_input: str) -> tuple:
@@ -172,45 +213,6 @@ def phone_line(name: str, phone: str) -> str:
     """
     return f"{Fore.GREEN}{name.ljust(30, '.')}{Fore.CYAN}{phone}\n"
 
-def mistaken_arg(mistake: str) -> str:
-    """This function takes a single argument, `mistake` which is a string
-    representing an error message. It returns a formatted string with colorful
-    terminal output based on the given mistake.
-    
-    Args:
-        mistake (str): The error message to be displayed.
-
-    Returns:
-        str: A formatted string containing the error message in colorful terminal output.
-    """
-    match mistake:
-        case 'invalid command':
-            return f"{Fore.RED}Invalid command."
-        case 'phone not in contacts':
-            return f"{Fore.RED}Invalid Name.\n{Fore.YELLOW}This contact doesn't exist."
-        case 'contact exists':
-            return f"{Fore.RED}Invalid Name.\n{Fore.YELLOW}This contact already exists."
-        case 'no name for search':
-            return f"{Fore.RED}Invalid data.\n{Fore.YELLOW}You must give me Name."
-        case 'invalid phone':
-            return f"{Fore.RED}Invalid Phone-number.\n{Fore.YELLOW}Must be 10 numbers, " \
-                    "or 13 if in international format."
-        case 'invalid args':
-            return f"{Fore.RED}Invalid data.\n{Fore.YELLOW}You must give me Name and Phone-number."
-
-def help_list() -> str:
-    """Returns the list of commands.
-
-    Returns:
-        str: string with all commands
-    """
-    return "'close' or 'exit'\tto exit assistant.\n" \
-            "'add [name] [phone]'\tto add new contact(phone must be 10 or 13 digits).\n" \
-            "'change [name] [phone]'\tto change contact's phone number.\n" \
-            "'del [name]'\t\tto delete contact from list.\n" \
-            "'phone [name]'\t\tto review contact's phone number.\n" \
-            "'all'\t\t\tto review all contacts.\n" 
-
 # Main block
 def main():
     """This code is designed to create a simple command-line interface (CLI)
@@ -234,7 +236,7 @@ def main():
             case "hello":
                 print(f"{Fore.YELLOW}How can I help you?\n")
             case "help":
-                print(help_list())
+                print(commands_help())
             case "add":
                 print(f"{Fore.YELLOW}{add_contact(contacts, args)}\n")
             case "change":
